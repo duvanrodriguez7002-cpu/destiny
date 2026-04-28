@@ -6,6 +6,14 @@ Destiny es una aplicación desarrollada con Expo, por lo tanto es necesario tene
 
 ---
 
+## Clonar el repo
+
+Para clonar el repo es necesario agregar el siguiente comando en tu terminal, ten en cuenta que es necesario tener instalado Git:
+
+```bash
+git clone https://github.com/duvanrodriguez7002-cpu/destiny.git
+```
+
 ## Requisitos previos
 
 Antes de iniciar, asegúrate de tener instalado:
