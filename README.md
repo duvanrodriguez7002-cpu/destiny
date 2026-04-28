@@ -19,7 +19,7 @@ git clone https://github.com/duvanrodriguez7002-cpu/destiny.git
 Antes de iniciar, asegúrate de tener instalado:
 
 - Node.js
-- npm o yarn
+- npm
 - Expo CLI
 
 ---
