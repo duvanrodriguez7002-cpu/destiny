@@ -22,3 +22,12 @@ Si no tienes Expo instalado, puedes hacerlo con el siguiente comando:
 
 ```bash
 npm install expo
+```
+
+## Ejecución
+
+Para ejecutar el proyecto es necesario estar en la carpeta en la terminal, luego de ello activas el proyecto de la siguiente manera:
+
+```bash
+npx expo start -c
+```
