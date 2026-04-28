@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 
@@ -6,19 +6,16 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      // Verifica si hay hardware biométrico
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       if (!hasHardware) {
         return Alert.alert('Error', 'El dispositivo no tiene biometría');
       }
 
-      // Verifica si hay huellas o face ID registrados
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
       if (!isEnrolled) {
         return Alert.alert('Error', 'No hay biometría configurada');
       }
 
-      // Lanza autenticación
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage: 'Autenticación requerida',
         fallbackLabel: 'Usar PIN',
@@ -36,19 +33,18 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  useEffect(() => {
+    handleLogin();
+  }, []);
+
   return (
     <View style={styles.container}>
-
       <Text style={styles.title}>Acceso Seguro</Text>
-
-      <Text style={styles.subtitle}>
-        Usa tu huella para ingresar
-      </Text>
+      <Text style={styles.subtitle}>Usa tu huella para ingresar</Text>
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Ingresar</Text>
       </TouchableOpacity>
-
     </View>
   );
 };

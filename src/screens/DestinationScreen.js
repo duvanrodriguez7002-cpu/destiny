@@ -23,7 +23,7 @@ const DestinationScreen = ({ navigation }) => {
 
     Alert.alert('Éxito', 'Destino actualizado');
 
-    navigation.goBack();
+    navigation.navigate('Home');
   };
 
   return (

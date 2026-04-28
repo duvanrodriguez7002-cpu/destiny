@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import DistanceCard from '../components/DistanceCard';
 import MovementIndicator from '../components/MovementIndicator';
 import CustomButton from '../components/CustomButton';
+import MapViewComponent from '../components/MapViewComponent';
 
 import { getCurrentLocation } from '../services/locationService';
 import { startAccelerometer } from '../services/sensorService';
@@ -15,75 +17,69 @@ import { DESTINO } from '../utils/constants';
 const HomeScreen = ({ navigation }) => {
   const [distance, setDistance] = useState(0);
   const [isMoving, setIsMoving] = useState(false);
+  const [refreshMap, setRefreshMap] = useState(0);
 
-  // Inicializa el acelerómetro para detectar movimiento
+  // Detecta movimiento
   useEffect(() => {
     const subscription = startAccelerometer(setIsMoving);
-
-    return () => {
-      if (subscription) subscription.remove();
-    };
+    return () => subscription && subscription.remove();
   }, []);
 
-  // Obtiene la ubicación cada cierto tiempo y calcula la distancia
+  // 🔥 SOLO actualiza cuando te estás moviendo
   useEffect(() => {
-    let interval;
+    const updateLocation = async () => {
+      if (!isMoving) return;
 
-    const startTracking = async () => {
-      interval = setInterval(async () => {
-        const coords = await getCurrentLocation();
+      const coords = await getCurrentLocation();
+      if (!coords) return;
 
-        if (!coords) return;
+      const dist = getDistance(
+        coords.latitude,
+        coords.longitude,
+        DESTINO.latitude,
+        DESTINO.longitude
+      );
 
-        const dist = getDistance(
-          coords.latitude,
-          coords.longitude,
-          DESTINO.latitude,
-          DESTINO.longitude
-        );
+      setDistance(dist);
+      setRefreshMap(prev => prev + 1); // 👈 actualiza mapa SOLO en movimiento
 
-        setDistance(dist);
-
-        // Vibra solo si el usuario está en movimiento
-        if (isMoving) {
-          vibrate();
-        }
-
-      }, 5000);
+      vibrate();
     };
 
-    startTracking();
+    updateLocation();
 
-    return () => {
-      if (interval) clearInterval(interval);
-    };
   }, [isMoving]);
+
+  // 🔄 Actualiza al volver de otra pantalla (ej: cambiar destino)
+  useFocusEffect(
+    React.useCallback(() => {
+      setRefreshMap(prev => prev + 1);
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
 
-      {/* Muestra la distancia al destino */}
-      <DistanceCard distance={distance} />
+      <View style={styles.map}>
+        <MapViewComponent refreshKey={refreshMap} />
+      </View>
 
-      {/* Indica si el usuario se está moviendo */}
-      <MovementIndicator isMoving={isMoving} />
+      <View style={styles.info}>
+        <DistanceCard distance={distance} />
+        <MovementIndicator isMoving={isMoving} />
 
-      {/* Botón para cambiar destino */}
-      <CustomButton
-        title="Cambiar destino"
-        onPress={() => navigation.navigate('Destination')}
-      />
+        <CustomButton
+          title="Cambiar destino"
+          onPress={() => navigation.navigate('Destination')}
+        />
 
-      {/* Botón para ver estado detallado */}
-      <CustomButton
-        title="Ver estado"
-        onPress={() =>
-          navigation.navigate('Status', {
-            distance,
-            isMoving
-          })
-        }
-      />
+        <CustomButton
+          title="Ver estado"
+          onPress={() =>
+            navigation.navigate('Status', { distance, isMoving })
+          }
+        />
+      </View>
 
     </View>
   );
@@ -94,9 +90,14 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
     backgroundColor: '#121212'
+  },
+  map: {
+    flex: 2
+  },
+  info: {
+    flex: 1,
+    padding: 10,
+    justifyContent: 'center'
   }
 });

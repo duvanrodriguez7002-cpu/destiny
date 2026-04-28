@@ -2,7 +2,7 @@ import * as Location from 'expo-location';
 
 export const getCurrentLocation = async () => {
     try {
-        // Pedir permisos
+        // Pedir permisos al sistema operativo (Android/iOS)
         const { status } = await Location.requestForegroundPermissionsAsync();
 
         if (status !== 'granted') {
@@ -10,7 +10,7 @@ export const getCurrentLocation = async () => {
             return null;
         }
 
-        // Obtener ubicación actual
+        // Obtener ubicación actual con alta precisión
         const location = await Location.getCurrentPositionAsync({
             accuracy: Location.Accuracy.High,
         });
