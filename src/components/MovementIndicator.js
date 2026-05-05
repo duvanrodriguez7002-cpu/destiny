@@ -1,26 +1,24 @@
-import React from "react";
-import { View, Text, StyleSheet} from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
-const MovementIndicator = ({isMoving}) => {
-    return (
-        <View style={style.container}>
-            <Text style={style.Text}>
-                {isMoving ? '✔️ en movimiento':'✖️ quieto'}
-            </Text>
-        </View>
-    );
+const MovementIndicator = ({ isMoving }) => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>
+        {isMoving ? 'En movimiento' : 'Sin movimiento'}
+      </Text>
+    </View>
+  );
 };
 
 export default MovementIndicator;
 
-const style = StyleSheet.create({
-    container:{
-        padding:15,
-        borderRadius:10,
-        backgroundColor:'#2a2a2a',
-    },
-    Text:{
-        color:'#fff',
-        fontSize:15,
-    }
-})
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 20,
+  },
+  text: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
